@@ -1,0 +1,32 @@
+{
+  "order_id": "8138161489",
+  "created_date": "11/29/2024",
+  "order_source_name": "forever21.com",
+  "order_source_name_merchant": "Forever 21",
+  "billing_address": "Josh Varela, 200 Calle Bonita, Redwood City, CA 94063",
+  "tracking_number": "",
+  "carrier_reference_raw": "Standard",
+  "to_address": "Josh Varela, 200 Calle Bonita, Redwood City, CA 94063",
+  "expected_delivery_from": "",
+  "expected_delivery_to": "",
+  "shipment_value": "$14.68",
+  "order_total_tax": "$1.78",
+  "total_shipping_cost": "$6.95",
+  "order_total_price": "$23.41",
+  "line_items": [
+    {
+      "product_id": "20013367450102",
+      "product_name": "Colorblock Cropped Cardigan Sweater",
+      "product_description": "S | WHITE | MULTI",
+      "quantity": "1",
+      "product_cost": "$32.99",
+      "product_discount": "",
+      "product_price": "$14.68",
+      "subtotal_cost": "$14.68",
+      "tax_amount": "$1.78",
+      "misc_cost": "",
+      "discount_amount": "",
+      "total_price": "$16.46"
+    }
+  ]
+}  

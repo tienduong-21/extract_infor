@@ -1,0 +1,6 @@
+beautifulsoup4==4.12.3
+html2text==2024.2.26
+python-dotenv==1.0.1
+google-generativeai==0.3.2
+jsonschema==4.21.1
+deepdiff==6.7.1

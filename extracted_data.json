@@ -1,0 +1,142 @@
+[
+  {
+    "filename": "1_Your Forever 21 Order #8138161489.html",
+    "data": {
+      "order_id": "8138161489",
+      "created_date": "11/29/2024",
+      "order_source_name": "Forever 21",
+      "order_source_name_merchant": "Forever 21",
+      "billing_address": "Josh Varela\n200 Calle Bonita\nRedwood City, CA 94063",
+      "tracking_number": "",
+      "carrier_reference_raw": "",
+      "to_address": "Josh Varela, 200 Calle Bonita, Redwood City CA 94063",
+      "expected_delivery_from": "",
+      "expected_delivery_to": "",
+      "shipment_value": "",
+      "order_total_tax": "$1.78",
+      "total_shipping_cost": "$6.95",
+      "order_total_price": "$23.41",
+      "line_items": [
+        {
+          "product_id": "20013367450102",
+          "product_name": "Colorblock Cropped Cardigan Sweater",
+          "product_description": "WHITE | MULTI | S",
+          "quantity": "1",
+          "product_cost": "",
+          "product_discount": "",
+          "product_price": "$16.46",
+          "subtotal_cost": "",
+          "tax_amount": "",
+          "misc_cost": "",
+          "discount_amount": "",
+          "total_price": ""
+        }
+      ]
+    }
+  },
+  {
+    "filename": "2_Forever 21 Credit Notification.html",
+    "data": {
+      "order_id": "8138161489",
+      "created_date": "",
+      "order_source_name": "",
+      "order_source_name_merchant": "Forever 21",
+      "billing_address": "",
+      "tracking_number": "",
+      "carrier_reference_raw": "",
+      "to_address": "",
+      "expected_delivery_from": "",
+      "expected_delivery_to": "",
+      "shipment_value": "",
+      "order_total_tax": "",
+      "total_shipping_cost": "",
+      "order_total_price": "$15.89",
+      "line_items": [
+        {
+          "product_id": "",
+          "product_name": "",
+          "product_description": "",
+          "quantity": "",
+          "product_cost": "",
+          "product_discount": "",
+          "product_price": "",
+          "subtotal_cost": "",
+          "tax_amount": "",
+          "misc_cost": "",
+          "discount_amount": "",
+          "total_price": ""
+        }
+      ]
+    }
+  },
+  {
+    "filename": "3_DHL eCommerce Tracking Status Update.html",
+    "data": {
+      "order_id": "",
+      "created_date": "12/03/2024",
+      "order_source_name": "",
+      "order_source_name_merchant": "",
+      "billing_address": "",
+      "tracking_number": "92612902779428000010287844",
+      "carrier_reference_raw": "92612902779428000010287844",
+      "to_address": "",
+      "expected_delivery_from": "",
+      "expected_delivery_to": "12/07/2024",
+      "shipment_value": "",
+      "order_total_tax": "",
+      "total_shipping_cost": "",
+      "order_total_price": "",
+      "line_items": [
+        {
+          "product_id": "",
+          "product_name": "",
+          "product_description": "",
+          "quantity": "",
+          "product_cost": "",
+          "product_discount": "",
+          "product_price": "",
+          "subtotal_cost": "",
+          "tax_amount": "",
+          "misc_cost": "",
+          "discount_amount": "",
+          "total_price": ""
+        }
+      ]
+    }
+  },
+  {
+    "filename": "4_DHL eCommerce Tracking Status Update (1).html",
+    "data": {
+      "order_id": "",
+      "created_date": "",
+      "order_source_name": "",
+      "order_source_name_merchant": "",
+      "billing_address": "",
+      "tracking_number": "92612902779428000010287844",
+      "carrier_reference_raw": "92612902779428000010287844",
+      "to_address": "Redwood City, CA",
+      "expected_delivery_from": "",
+      "expected_delivery_to": "12/05/2024",
+      "shipment_value": "",
+      "order_total_tax": "",
+      "total_shipping_cost": "",
+      "order_total_price": "",
+      "line_items": [
+        {
+          "product_id": "",
+          "product_name": "",
+          "product_description": "",
+          "quantity": "",
+          "product_cost": "",
+          "product_discount": "",
+          "product_price": "",
+          "subtotal_cost": "",
+          "tax_amount": "",
+          "misc_cost": "",
+          "discount_amount": "",
+          "total_price": ""
+        }
+      ]
+    }
+  }
+]

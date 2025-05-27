@@ -1,0 +1,32 @@
+{
+    "order_id": "",
+    "created_date": "",
+    "order_source_name": "",
+    "order_source_name_merchant": "",
+    "billing_address": "",
+    "tracking_number": "92612902779428000010287844",
+    "carrier_reference_raw": "DHL eCommerce Solutions Americas",
+    "to_address": "",
+    "expected_delivery_from": "",
+    "expected_delivery_to": "",
+    "shipment_value": "",
+    "order_total_tax": "",
+    "total_shipping_cost": "",
+    "order_total_price": "",
+    "line_items": [
+      {
+        "product_id": "",
+        "product_name": "",
+        "product_description": "",
+        "quantity": "",
+        "product_cost": "",
+        "product_discount": "",
+        "product_price": "",
+        "subtotal_cost": "",
+        "tax_amount": "",
+        "misc_cost": "",
+        "discount_amount": "",
+        "total_price": ""
+      }
+    ]
+  } 

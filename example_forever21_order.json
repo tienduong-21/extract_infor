@@ -1,0 +1,50 @@
+{
+  "order_id": "8138167523",
+  "created_date": "12/01/2024",
+  "order_source_name": "forever21.com",
+  "order_source_name_merchant": "Forever 21",
+  "billing_address": "Sarah Johnson, 123 Main Street, San Francisco, CA 94105",
+  "tracking_number": "9374889674326",
+  "carrier_reference_raw": "Standard",
+  "to_address": "Sarah Johnson, 123 Main Street, San Francisco, CA 94105",
+  "expected_delivery_from": "12/05/2024",
+  "expected_delivery_to": "12/08/2024",
+  "shipment_value": "$45.98",
+  "order_total_tax": "$4.25",
+  "total_shipping_cost": "$6.95",
+  "order_total_price": "$57.18",
+  "line_items": [
+    {
+      "product_id": "20013456789012",
+      "product_name": "High-Rise Straight Leg Jeans",
+      "product_description": "MEDIUM WASH | 28",
+      "quantity": "1",
+      "original_price": "$39.99",
+      "sale_price": "$29.99",
+      "product_cost": "$39.99",
+      "product_discount": "$10.00",
+      "product_price": "$29.99",
+      "subtotal_cost": "$29.99",
+      "tax_amount": "$2.77",
+      "misc_cost": "",
+      "discount_amount": "$10.00",
+      "total_price": "$32.76"
+    },
+    {
+      "product_id": "20013987654321",
+      "product_name": "Basic Crew Neck T-Shirt",
+      "product_description": "WHITE | M",
+      "quantity": "2",
+      "original_price": "$12.99",
+      "sale_price": "$7.99",
+      "product_cost": "$12.99",
+      "product_discount": "$5.00",
+      "product_price": "$7.99",
+      "subtotal_cost": "$15.98",
+      "tax_amount": "$1.48",
+      "misc_cost": "",
+      "discount_amount": "$10.00",
+      "total_price": "$17.46"
+    }
+  ]
+} 

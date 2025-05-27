@@ -1,0 +1,32 @@
+{
+    "order_id": "8138161489",
+    "created_date": "",
+    "order_source_name": "forever21.com",
+    "order_source_name_merchant": "Forever 21",
+    "billing_address": "",
+    "tracking_number": "",
+    "carrier_reference_raw": "",
+    "to_address": "",
+    "expected_delivery_from": "",
+    "expected_delivery_to": "",
+    "shipment_value": "",
+    "order_total_tax": "",
+    "total_shipping_cost": "",
+    "order_total_price": "",
+    "line_items": [
+      {
+        "product_id": "",
+        "product_name": "",
+        "product_description": "",
+        "quantity": "",
+        "product_cost": "",
+        "product_discount": "",
+        "product_price": "",
+        "subtotal_cost": "",
+        "tax_amount": "",
+        "misc_cost": "",
+        "discount_amount": "",
+        "total_price": ""
+      }
+    ]
+  }  
