@@ -96,7 +96,8 @@ Step 1: Identify Email Type First, analyze the email content to determine if it 
 "Money Back"
 "Credit Issued"
 "Refund Issued"
-If the email is identified as a credit/refund/return type, proceed to the next steps.
+If the email is identified as a credit/refund/return type, just return basic information (order_id, created_date, order_source_name, order_source_name_merchant), do not extract any other information like price, tax, shipping, etc. 
+However, keep structure out json output with empty values. Pass next step.
 
 Step 2: Extract Required Information 
 You are required to extract the following fields only, ignoring any price-related fields or monetary amounts, as the focus is on tracking goods/products rather than financial transactions:
@@ -106,14 +107,14 @@ Basic Information:
 order_id: The unique identifier for the order (e.g., "FO123456789").
 created_date: The date when the order was placed in MM/DD/YYYY format (e.g., "12/01/2024").
 order_source_name: The name of the website or platform (e.g., "abc.com").
-order_source_name_merchant: The specific merchant or seller name (e.g., "ABC 123").
-billing_address: Complete billing address including street, city, state, and ZIP, formatted as "Name, Street, City, State, Zip".
+order_source_name_merchant: The specific merchant or seller name or company name or brand name 
+billing_address: Complete billing address including street, city, state, and ZIP, formatted as "Name, Street, City, State, Zip". (e.g., "Jane Smith, 123 Main Street, San Francisco, CA 94105")
 tracking_number: Shipping tracking number if available.
-carrier_reference_raw: The shipping method name (e.g., "Express").
-to_address: Complete shipping address including street, city, state, and ZIP, formatted as "Name, Street, City, State, Zip".
+carrier_reference_raw: The shipping method name or carrier name or shipping provider name (e.g., "Express" from "Express Shipping" ).
+to_address: Complete shipping address including street, city, state, and ZIP, formatted as "Name, Street, City, State, Zip". (e.g., "Jane Smith, 123 Main Street, San Francisco, CA 94105")
 expected_delivery_from: Earlier date of expected delivery window.
 expected_delivery_to: Later date of expected delivery window.
-shipment_value: Total cost of items before tax and shipping.
+shipment_value: Total cost of item or all items before discount and tax. Formula: shipment_value = order_total_price - total_shipping_cost - order_total_tax. (e.g., "$16" from "$18" - "$1" - "$1)
 order_total_tax: Total tax amount for the entire order, including currency symbol.
 total_shipping_cost: Total shipping charges, including currency symbol.
 order_total_price: Final total including items and tax, including currency symbol.
@@ -125,12 +126,12 @@ product_description: Size, color, and additional details, formatted as "Size | C
 quantity: Number of items ordered.
 product_cost: Original crossed-out price.
 product_discount: Discount amount per unit if available; otherwise, use an empty string.
-product_price: Net price after discount but before tax, shipping, and handling. This is the price after applying the discount but before adding tax and shipping costs. For example, if the original price is $40 and price after discount is $12 and tax is $4, then `product_price` should be $12 - $4 = $8.
-subtotal_cost: Total cost for this line item before tax/shipping.
-tax_amount: Tax applied on subtotal_cost. If only one line item, it should equal order_total_tax; otherwise, leave as an empty string.
+product_price: Price for this line item before tax/shipping. In case only one line item, it should equal subtotal_cost.
+subtotal_cost: Total cost for this line item before tax/shipping. 
+tax_amount: Tax applied on line item. In case only one line item, it should equal order_total_tax 
 misc_cost: Any additional charges for this item; if none, use an empty string.
 discount_amount: Total discount applied to this line item; if none, use an empty string.
-total_price: Final total for this line item including tax.
+total_price: Final total for this line item including tax . This is price after discount but before tax but after shipping, and handling. Formula: total_price = subtotal_cost + tax_amount.
 Step 3: JSON Formatting Rules
 
 Ensure that the output contains ONLY valid JSON, with no additional text or explanations.
@@ -140,6 +141,7 @@ For dates, maintain the format MM/DD/YYYY.
 For addresses, ensure all components (street, city, state, zip) are included.
 Do not use markdown formatting or code blocks.
 The response must start with {{ and end with }}.
+Price should be in format "$" followed by a number.
 Example JSON Structure:
 {{
     "order_id": "",
