@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+"""
+Email Parser
+-----------
+A script to parse email content and extract structured information using Google's Gemini AI model.
+"""
+
 import os
 import json
 import html2text
@@ -5,24 +12,24 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from google import genai
 from jsonschema import validate, ValidationError
-from typing import Dict, List, Optional, Union
-import os.path
-from deepdiff import DeepDiff
+from typing import Dict
 import csv
 from datetime import datetime
-from collections import defaultdict
 
-# Load environment variables
-load_dotenv()
+# Configuration
+# ----------------------------------------------------------------------------
+def load_configuration():
+    """Load environment variables and configure API client."""
+    load_dotenv()
+    
+    api_key = os.getenv('GOOGLE_API_KEY')
+    if not api_key:
+        raise ValueError("Please set GOOGLE_API_KEY in .env file")
+    
+    return genai.Client(api_key=api_key)
 
-# Configure Gemini API
-GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
-if not GOOGLE_API_KEY:
-    raise ValueError("Please set GOOGLE_API_KEY in .env file")
-
-client = genai.Client(api_key=GOOGLE_API_KEY)
-
-# JSON Schema for validation
+# JSON Schema Definition
+# ----------------------------------------------------------------------------
 SCHEMA = {
     "type": "object",
     "properties": {
@@ -63,27 +70,21 @@ SCHEMA = {
     }
 }
 
+# HTML Processing
+# ----------------------------------------------------------------------------
 def clean_html(html_content: str) -> str:
-    """
-    Clean HTML content by removing scripts, styles, and converting to plain text
-    while preserving important structure.
-    """
-    # Parse HTML
+    """Clean HTML content by removing scripts, styles, and converting to plain text."""
     soup = BeautifulSoup(html_content, 'html.parser')
     
-    # Remove script and style elements
     for script in soup(["script", "style"]):
         script.decompose()
     
-    # Convert HTML to text while preserving some structure
     h = html2text.HTML2Text()
     h.ignore_links = False
     h.ignore_images = True
     h.body_width = 0
     
-    text = h.handle(str(soup))
-    
-    return text
+    return h.handle(str(soup))
 
 def create_prompt(email_content: str) -> str:
     return f"""You are a highly accurate JSON extractor designed to process email content related to credits, refunds, or returns. Your primary objective is to extract relevant information and present it in a well-structured JSON format. Follow the detailed instructions below meticulously.
@@ -180,45 +181,32 @@ Email Content to Process:
 {email_content}"""
 
 def validate_json_output(json_str: str) -> Dict:
-    """
-    Validate JSON output against schema and return parsed JSON if valid.
-    """
+    """Validate JSON output against schema and return parsed JSON if valid."""
     try:
-        # Remove any markdown formatting if present
         if json_str.startswith("```json"):
             json_str = json_str.split("```json")[1]
         if json_str.startswith("```"):
             json_str = json_str.split("```")[1]
         json_str = json_str.strip().strip("`")
         
-        # Parse JSON
         data = json.loads(json_str)
         validate(instance=data, schema=SCHEMA)
         return data
     except json.JSONDecodeError as e:
-        print(f"Invalid JSON format. Response was:\n{json_str}")
-        print(f"Error details: {str(e)}")
+        print(f"Invalid JSON format: {str(e)}")
         raise
     except ValidationError as e:
-        print(f"JSON validation failed. Response was:\n{json_str}")
-        print(f"Error details: {str(e)}")
+        print(f"JSON validation failed: {str(e)}")
         raise
 
 def process_email(file_path: str) -> Dict:
-    """
-    Process a single email file and return extracted information.
-    """
+    """Process a single email file and return extracted information."""
     print(f"\nProcessing {file_path}...")
     
-    # Read HTML file
     with open(file_path, 'r', encoding='utf-8') as f:
         html_content = f.read()
-    
-    # Clean HTML content
     clean_content = clean_html(html_content)
-    print("clean_content=", clean_content)
     
-    # Create prompt and get response from Gemini
     prompt = create_prompt(clean_content)
     response = client.models.generate_content(
         model="gemini-2.0-flash",
@@ -233,71 +221,22 @@ def process_email(file_path: str) -> Dict:
         }
     )
     
-    # Print response for debugging
-    print(f"Raw response from Gemini API:\n{response.text}\n")
-    
-    # Validate and return JSON
     try:
         result = validate_json_output(response.text)
-        
-        # Create output directory if it doesn't exist
+        output_filename = os.path.join('output', os.path.basename(file_path).replace('.html', '.json'))
         os.makedirs('output', exist_ok=True)
         
-        # Save individual JSON file
-        output_filename = os.path.join('output', os.path.basename(file_path).replace('.html', '.json'))
         with open(output_filename, 'w', encoding='utf-8') as f:
             json.dump(result, f, indent=2)
         print(f"Saved results to {output_filename}")
         
         return result
     except Exception as e:
-        print(f"Error details for {file_path}: {str(e)}")
+        print(f"Error processing {file_path}: {str(e)}")
         raise
 
-def compare_field_values(expected: Dict, actual: Dict, path: str = "", field_stats: Dict = None) -> Dict:
-    """
-    Compare field values and track statistics for each field.
-    Returns a dictionary of field statistics.
-    """
-    if field_stats is None:
-        field_stats = defaultdict(lambda: {'correct': 0, 'incorrect': 0, 'missing': 0})
-    
-    if isinstance(expected, dict) and isinstance(actual, dict):
-        for key in expected:
-            current_path = f"{path}.{key}" if path else key
-            if key in actual:
-                if isinstance(expected[key], (dict, list)):
-                    compare_field_values(expected[key], actual[key], current_path, field_stats)
-                else:
-                    if expected[key] == actual[key]:
-                        field_stats[current_path]['correct'] += 1
-                    else:
-                        field_stats[current_path]['incorrect'] += 1
-            else:
-                field_stats[current_path]['missing'] += 1
-                
-        # Check for extra fields in actual
-        for key in actual:
-            if key not in expected:
-                current_path = f"{path}.{key}" if path else key
-                field_stats[current_path]['incorrect'] += 1
-                
-    elif isinstance(expected, list) and isinstance(actual, list):
-        for i, (exp_item, act_item) in enumerate(zip(expected, actual)):
-            current_path = f"{path}[{i}]"
-            compare_field_values(exp_item, act_item, current_path, field_stats)
-            
-        # Count missing or extra list items
-        if len(expected) != len(actual):
-            field_stats[path]['incorrect'] += abs(len(expected) - len(actual))
-            
-    return field_stats
-
-def calculate_file_accuracy(expected: Dict, actual: Dict) -> float:
-    """
-    Calculate the general accuracy score for a single file by comparing all fields.
-    Returns a percentage accuracy score.
-    """
+def calculate_accuracy(expected: Dict, actual: Dict) -> float:
+    """Calculate accuracy score for a single file."""
     total_fields = 0
     correct_fields = 0
     
@@ -318,114 +257,253 @@ def calculate_file_accuracy(expected: Dict, actual: Dict) -> float:
     compare_values(expected, actual)
     return (correct_fields / total_fields * 100) if total_fields > 0 else 0
 
-def compare_json_files(expected_dir: str, output_dir: str) -> Dict:
+def create_evaluation_prompt(extracted_json: str, expected_json: str) -> str:
+    """Create a prompt for LLM to evaluate extraction accuracy."""
+    return f"""You are an expert system for evaluating JSON data extraction accuracy. Compare the extracted JSON with the expected JSON and provide a detailed analysis.
+
+Rules:
+1. Your response must be valid JSON
+2. Always include all required fields in your response
+3. Use exact field names as specified
+4. Provide specific details for any issues found
+
+Compare these JSONs and analyze their accuracy:
+
+Extracted JSON:
+{extracted_json}
+
+Expected JSON:
+{expected_json}
+
+Evaluate the following aspects:
+1. Field presence and accuracy
+2. Format correctness (dates, addresses, prices)
+3. Data completeness
+4. Edge case handling
+
+Respond with this exact JSON structure:
+{{
+    "accuracy_score": <number between 0-100>,
+    "field_analysis": {{
+        "correct_fields": ["field1", "field2"],
+        "incorrect_fields": ["field: reason for error"],
+        "missing_fields": ["field1", "field2"]
+    }},
+    "quality_issues": ["specific issue description"],
+    "edge_case_handling": ["specific edge case description"],
+    "improvement_suggestions": ["specific suggestion"]
+}}"""
+
+def evaluate_with_llm(extracted_data: Dict, expected_data: Dict) -> Dict:
     """
-    Compare JSON files in the expected output directory with files in the output directory.
-    Returns a dictionary with comparison results and saves to CSV.
+    Use LLM to evaluate extraction accuracy and provide detailed analysis.
+    Returns a standardized evaluation result.
     """
-    print("\n=== Comparing JSON files ===")
-    
-    # Initialize results dictionary
-    results = {
-        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'total_expected': 0,
-        'total_output': 0,
-        'files_matching': 0,
-        'files_with_differences': 0,
-        'missing_files': 0,
-        'extra_files': 0
-    }
-    
-    if not os.path.exists(expected_dir):
-        print(f"Error: Expected output directory '{expected_dir}' does not exist")
-        return results
+    try:
+        # Convert dictionaries to formatted JSON strings
+        extracted_json = json.dumps(extracted_data, indent=2)
+        expected_json = json.dumps(expected_data, indent=2)
         
-    if not os.path.exists(output_dir):
-        print(f"Error: Output directory '{output_dir}' does not exist")
-        return results
+        # Create evaluation prompt
+        prompt = create_evaluation_prompt(extracted_json, expected_json)
+        
+        # Get LLM analysis
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[prompt],
+            config={
+                "temperature": 0.0,
+                "top_p": 0.95,
+                "top_k": 40,
+                "max_output_tokens": 1024
+            }
+        )
+        
+        # Clean and parse LLM response
+        response_text = response.text
+        
+        # Remove any markdown formatting if present
+        if "```json" in response_text:
+            response_text = response_text.split("```json")[1].split("```")[0]
+        elif "```" in response_text:
+            response_text = response_text.split("```")[1]
+        
+        response_text = response_text.strip()
+        
+        # Parse JSON response
+        try:
+            evaluation = json.loads(response_text)
+            
+            # Validate required fields are present
+            required_fields = {
+                "accuracy_score",
+                "field_analysis",
+                "quality_issues",
+                "edge_case_handling",
+                "improvement_suggestions"
+            }
+            
+            if not all(field in evaluation for field in required_fields):
+                raise ValueError("Missing required fields in LLM response")
+            
+            if not isinstance(evaluation["accuracy_score"], (int, float)):
+                raise ValueError("Invalid accuracy score format")
+            
+            return evaluation
+            
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse LLM response: {str(e)}")
+            print(f"Raw response: {response_text}")
+            raise
+            
+    except Exception as e:
+        print(f"Error in LLM evaluation: {str(e)}")
+        # Return a standardized error result
+        return {
+            "accuracy_score": 0,
+            "field_analysis": {
+                "correct_fields": [],
+                "incorrect_fields": [f"Evaluation error: {str(e)}"],
+                "missing_fields": []
+            },
+            "quality_issues": ["Evaluation failed"],
+            "edge_case_handling": ["Could not evaluate edge cases"],
+            "improvement_suggestions": ["Retry evaluation"]
+        }
+
+def compare_results(expected_dir: str, output_dir: str) -> None:
+    """Compare output files with expected results using LLM evaluation."""
+    if not all(os.path.exists(d) for d in [expected_dir, output_dir]):
+        print("Error: Required directories not found")
+        return
 
     expected_files = {f for f in os.listdir(expected_dir) if f.endswith('.json')}
     output_files = {f for f in os.listdir(output_dir) if f.endswith('.json')}
-    
-    results['total_expected'] = len(expected_files)
-    results['total_output'] = len(output_files)
-    
-    # Check for missing or extra files
-    missing_files = expected_files - output_files
-    extra_files = output_files - expected_files
     matching_files = expected_files & output_files
+
+    evaluation_results = []
     
-    results['missing_files'] = len(missing_files)
-    results['extra_files'] = len(extra_files)
-    
-    # Create accuracy report CSV file
+    # Initialize CSV file
     accuracy_csv = 'file_accuracy.csv'
     csv_exists = os.path.exists(accuracy_csv)
     
     with open(accuracy_csv, 'a', newline='') as f:
         writer = csv.writer(f)
         if not csv_exists:
-            writer.writerow(['Timestamp', 'Filename', 'Accuracy %', 'Status'])
-    
-    # Compare contents of matching files
-    print("\nComparing file contents:")
-    total_accuracy = 0
-    processed_files = 0
+            writer.writerow(['Timestamp', 'Filename', 'Accuracy %', 'Status', 'Issues', 'Suggestions'])
     
     for filename in sorted(matching_files):
-        with open(os.path.join(expected_dir, filename), 'r') as f1, \
-             open(os.path.join(output_dir, filename), 'r') as f2:
-            expected_data = json.load(f1)
-            actual_data = json.load(f2)
-            
-            # Calculate general accuracy for this file
-            accuracy = calculate_file_accuracy(expected_data, actual_data)
-            total_accuracy += accuracy
-            processed_files += 1
-            
-            # Compare full JSON contents
-            diff = DeepDiff(expected_data, actual_data, ignore_order=True)
-            status = "Exact Match" if not diff else "Has Differences"
-            
-            # Save accuracy to CSV
+        print(f"\nEvaluating {filename}")
+        try:
+            with open(os.path.join(expected_dir, filename), 'r') as f1, \
+                 open(os.path.join(output_dir, filename), 'r') as f2:
+                expected_data = json.load(f1)
+                actual_data = json.load(f2)
+                
+                # Get LLM evaluation
+                evaluation = evaluate_with_llm(actual_data, expected_data)
+                evaluation_results.append({
+                    'filename': filename,
+                    'evaluation': evaluation
+                })
+                
+                # Print evaluation summary
+                print(f"Accuracy Score: {evaluation['accuracy_score']}%")
+                
+                # Prepare issues and suggestions for CSV
+                issues = '; '.join(evaluation['field_analysis']['incorrect_fields']) if evaluation['field_analysis']['incorrect_fields'] else ''
+                suggestions = '; '.join(evaluation['improvement_suggestions']) if evaluation['improvement_suggestions'] else ''
+                
+                # Save to CSV
+                with open(accuracy_csv, 'a', newline='') as f:
+                    writer = csv.writer(f)
+                    writer.writerow([
+                        datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                        filename,
+                        f"{evaluation['accuracy_score']:.1f}",
+                        "Pass" if evaluation['accuracy_score'] >= 90 else "Fail",
+                        issues,
+                        suggestions
+                    ])
+                
+                # Print detailed feedback
+                if evaluation['field_analysis']['incorrect_fields']:
+                    print("\nIssues found:")
+                    for field in evaluation['field_analysis']['incorrect_fields']:
+                        print(f"- {field}")
+                
+                if evaluation['quality_issues']:
+                    print("\nQuality issues:")
+                    for issue in evaluation['quality_issues']:
+                        print(f"- {issue}")
+                
+                if evaluation['improvement_suggestions']:
+                    print("\nSuggestions:")
+                    for suggestion in evaluation['improvement_suggestions']:
+                        print(f"- {suggestion}")
+                        
+        except Exception as e:
+            print(f"Error processing {filename}: {str(e)}")
+            # Log error in CSV
             with open(accuracy_csv, 'a', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow([
-                    results['timestamp'],
+                    datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                     filename,
-                    f"{accuracy:.1f}",
-                    status
+                    "0.0",
+                    "Error",
+                    str(e),
+                    "Check file and retry"
                 ])
             
-            if diff:
-                results['files_with_differences'] += 1
-                print(f"\n❌ {filename} - Accuracy: {accuracy:.1f}% - Has differences:")
-                print(diff.pretty())
-            else:
-                results['files_matching'] += 1
-                print(f"✅ {filename} - Accuracy: {accuracy:.1f}% - Exact match")
+            evaluation_results.append({
+                'filename': filename,
+                'evaluation': {
+                    "accuracy_score": 0,
+                    "field_analysis": {
+                        "correct_fields": [],
+                        "incorrect_fields": [f"Processing error: {str(e)}"],
+                        "missing_fields": []
+                    },
+                    "quality_issues": ["File processing failed"],
+                    "edge_case_handling": [],
+                    "improvement_suggestions": ["Check file format and content"]
+                }
+            })
     
-    # Calculate and print average accuracy
-    if processed_files > 0:
-        average_accuracy = total_accuracy / processed_files
-        print(f"\n=== Overall Results ===")
-        print(f"Average accuracy across all files: {average_accuracy:.1f}%")
-        print(f"Total files processed: {processed_files}")
-        print(f"Files with exact matches: {results['files_matching']}")
-        print(f"Files with differences: {results['files_with_differences']}")
-        print(f"Missing files: {results['missing_files']}")
-        print(f"Extra files: {results['extra_files']}")
-        print(f"\nDetailed accuracy report saved to: {accuracy_csv}")
-    
-    return results
+    # Save detailed evaluation report
+    try:
+        report_file = 'evaluation_report.json'
+        with open(report_file, 'w') as f:
+            json.dump({
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'results': evaluation_results
+            }, f, indent=2)
+        
+        # Calculate overall statistics
+        valid_results = [r for r in evaluation_results if r['evaluation']['accuracy_score'] > 0]
+        if valid_results:
+            total_accuracy = sum(r['evaluation']['accuracy_score'] for r in valid_results)
+            avg_accuracy = total_accuracy / len(valid_results)
+            
+            print(f"\n=== Overall Results ===")
+            print(f"Files processed: {len(evaluation_results)}")
+            print(f"Successfully evaluated: {len(valid_results)}")
+            print(f"Average accuracy: {avg_accuracy:.1f}%")
+            print(f"Detailed report saved to: {report_file}")
+            print(f"Accuracy log saved to: {accuracy_csv}")
+        else:
+            print("\nNo valid evaluation results obtained")
+            
+    except Exception as e:
+        print(f"Error saving evaluation report: {str(e)}")
 
 def main():
-    # Directory containing HTML files
+    """Main execution function."""
     html_dir = 'HTML'
-    
-    # Process all emails
-    print("Starting email processing...")
     results = []
+    
+    print("Starting email processing...")
     
     for filename in sorted(os.listdir(html_dir)):
         if filename.endswith('.html'):
@@ -443,9 +521,9 @@ def main():
     print("\nProcessed files:")
     for result in results:
         print(f"- {result['filename']}")
-        
-    # Compare results with expected output
-    compare_json_files('Expected Output', 'output')
+    
+    compare_results('Expected Output', 'output')
 
 if __name__ == "__main__":
+    client = load_configuration()
     main() 

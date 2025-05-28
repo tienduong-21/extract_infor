@@ -1,0 +1,125 @@
+{
+  "timestamp": "2025-05-28 16:46:40",
+  "results": [
+    {
+      "filename": "1_Your Forever 21 Order #8138161489.json",
+      "evaluation": {
+        "accuracy_score": 100,
+        "field_analysis": {
+          "correct_fields": [
+            "order_id",
+            "created_date",
+            "order_source_name",
+            "order_source_name_merchant",
+            "billing_address",
+            "tracking_number",
+            "carrier_reference_raw",
+            "to_address",
+            "expected_delivery_from",
+            "expected_delivery_to",
+            "shipment_value",
+            "order_total_tax",
+            "total_shipping_cost",
+            "order_total_price",
+            "line_items"
+          ],
+          "incorrect_fields": [],
+          "missing_fields": []
+        },
+        "quality_issues": [],
+        "edge_case_handling": [],
+        "improvement_suggestions": []
+      }
+    },
+    {
+      "filename": "2_Forever 21 Credit Notification.json",
+      "evaluation": {
+        "accuracy_score": 100,
+        "field_analysis": {
+          "correct_fields": [
+            "order_id",
+            "created_date",
+            "order_source_name",
+            "order_source_name_merchant",
+            "billing_address",
+            "tracking_number",
+            "carrier_reference_raw",
+            "to_address",
+            "expected_delivery_from",
+            "expected_delivery_to",
+            "shipment_value",
+            "order_total_tax",
+            "total_shipping_cost",
+            "order_total_price",
+            "line_items"
+          ],
+          "incorrect_fields": [],
+          "missing_fields": []
+        },
+        "quality_issues": [],
+        "edge_case_handling": [],
+        "improvement_suggestions": []
+      }
+    },
+    {
+      "filename": "3_DHL eCommerce Tracking Status Update.json",
+      "evaluation": {
+        "accuracy_score": 100,
+        "field_analysis": {
+          "correct_fields": [
+            "order_id",
+            "created_date",
+            "order_source_name",
+            "order_source_name_merchant",
+            "billing_address",
+            "tracking_number",
+            "carrier_reference_raw",
+            "to_address",
+            "expected_delivery_from",
+            "expected_delivery_to",
+            "shipment_value",
+            "order_total_tax",
+            "total_shipping_cost",
+            "order_total_price",
+            "line_items"
+          ],
+          "incorrect_fields": [],
+          "missing_fields": []
+        },
+        "quality_issues": [],
+        "edge_case_handling": [],
+        "improvement_suggestions": []
+      }
+    },
+    {
+      "filename": "4_DHL eCommerce Tracking Status Update (1).json",
+      "evaluation": {
+        "accuracy_score": 100,
+        "field_analysis": {
+          "correct_fields": [
+            "order_id",
+            "created_date",
+            "order_source_name",
+            "order_source_name_merchant",
+            "billing_address",
+            "tracking_number",
+            "carrier_reference_raw",
+            "to_address",
+            "expected_delivery_from",
+            "expected_delivery_to",
+            "shipment_value",
+            "order_total_tax",
+            "total_shipping_cost",
+            "order_total_price",
+            "line_items"
+          ],
+          "incorrect_fields": [],
+          "missing_fields": []
+        },
+        "quality_issues": [],
+        "edge_case_handling": [],
+        "improvement_suggestions": []
+      }
+    }
+  ]
+}

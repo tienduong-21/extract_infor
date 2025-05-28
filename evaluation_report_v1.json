@@ -1,0 +1,146 @@
+{
+  "timestamp": "2025-05-28 16:42:04",
+  "results": [
+    {
+      "filename": "1_Your Forever 21 Order #8138161489.json",
+      "evaluation": {
+        "accuracy_score": 92,
+        "field_analysis": {
+          "correct_fields": [
+            "order_id",
+            "created_date",
+            "order_source_name",
+            "order_source_name_merchant",
+            "billing_address",
+            "tracking_number",
+            "carrier_reference_raw",
+            "to_address",
+            "expected_delivery_from",
+            "expected_delivery_to",
+            "order_total_tax",
+            "total_shipping_cost",
+            "order_total_price",
+            "line_items",
+            "line_items[0].product_id",
+            "line_items[0].product_name",
+            "line_items[0].quantity",
+            "line_items[0].product_cost",
+            "line_items[0].product_discount",
+            "line_items[0].product_price",
+            "line_items[0].subtotal_cost",
+            "line_items[0].tax_amount",
+            "line_items[0].misc_cost",
+            "line_items[0].discount_amount",
+            "line_items[0].total_price"
+          ],
+          "incorrect_fields": [
+            "shipment_value: Extracted value is empty string, expected value is $14.68",
+            "line_items[0].product_description: Extracted value is 'WHITE | MULTI | S', expected value is 'S | WHITE | MULTI'"
+          ],
+          "missing_fields": []
+        },
+        "quality_issues": [
+          "The 'shipment_value' field was not correctly extracted. It was extracted as an empty string when the expected value was '$14.68'.",
+          "The order of the product description components is incorrect. The extracted order is 'WHITE | MULTI | S' while the expected order is 'S | WHITE | MULTI'."
+        ],
+        "edge_case_handling": [
+          "The empty strings for 'tracking_number', 'expected_delivery_from', 'expected_delivery_to', 'product_discount', and 'misc_cost' are handled correctly, indicating a good handling of missing or unavailable data."
+        ],
+        "improvement_suggestions": [
+          "Improve the extraction logic to accurately capture the 'shipment_value' from the source data. It appears the logic is failing to identify the correct value.",
+          "Review and correct the logic for extracting and ordering the components of the 'product_description'. Ensure the correct order is maintained during extraction."
+        ]
+      }
+    },
+    {
+      "filename": "2_Forever 21 Credit Notification.json",
+      "evaluation": {
+        "accuracy_score": 100,
+        "field_analysis": {
+          "correct_fields": [
+            "order_id",
+            "created_date",
+            "order_source_name",
+            "order_source_name_merchant",
+            "billing_address",
+            "tracking_number",
+            "carrier_reference_raw",
+            "to_address",
+            "expected_delivery_from",
+            "expected_delivery_to",
+            "shipment_value",
+            "order_total_tax",
+            "total_shipping_cost",
+            "order_total_price",
+            "line_items"
+          ],
+          "incorrect_fields": [],
+          "missing_fields": []
+        },
+        "quality_issues": [],
+        "edge_case_handling": [],
+        "improvement_suggestions": []
+      }
+    },
+    {
+      "filename": "3_DHL eCommerce Tracking Status Update.json",
+      "evaluation": {
+        "accuracy_score": 100,
+        "field_analysis": {
+          "correct_fields": [
+            "order_id",
+            "created_date",
+            "order_source_name",
+            "order_source_name_merchant",
+            "billing_address",
+            "tracking_number",
+            "carrier_reference_raw",
+            "to_address",
+            "expected_delivery_from",
+            "expected_delivery_to",
+            "shipment_value",
+            "order_total_tax",
+            "total_shipping_cost",
+            "order_total_price",
+            "line_items"
+          ],
+          "incorrect_fields": [],
+          "missing_fields": []
+        },
+        "quality_issues": [],
+        "edge_case_handling": [],
+        "improvement_suggestions": []
+      }
+    },
+    {
+      "filename": "4_DHL eCommerce Tracking Status Update (1).json",
+      "evaluation": {
+        "accuracy_score": 100,
+        "field_analysis": {
+          "correct_fields": [
+            "order_id",
+            "created_date",
+            "order_source_name",
+            "order_source_name_merchant",
+            "billing_address",
+            "tracking_number",
+            "carrier_reference_raw",
+            "to_address",
+            "expected_delivery_from",
+            "expected_delivery_to",
+            "shipment_value",
+            "order_total_tax",
+            "total_shipping_cost",
+            "order_total_price",
+            "line_items"
+          ],
+          "incorrect_fields": [],
+          "missing_fields": []
+        },
+        "quality_issues": [],
+        "edge_case_handling": [],
+        "improvement_suggestions": []
+      }
+    }
+  ]
+}
